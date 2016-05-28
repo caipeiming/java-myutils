@@ -1,6 +1,7 @@
 package com.jdk5.blog.image;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -27,7 +28,6 @@ public class ImageUtils {
 	private int givenHeight;
 	private boolean fixedGivenSize;
 	private Color bgcolor;
-	private boolean hasDrawBgColor = false;
 	private boolean keepRatio;
 
 	public ImageUtils(File srcFile){
@@ -223,11 +223,10 @@ public class ImageUtils {
 		BufferedImage resizedImage = this.createImage(img, targetWidth, targetHeight);
 		Graphics2D g = resizedImage.createGraphics();
 		this.setRenderingHint(g);
-		//if (!this.hasDrawBgColor) {
+		if (this.bgcolor != null) {
 			g.setPaint(this.bgcolor);
 			g.fillRect(0, 0, targetWidth, targetHeight);
-			this.hasDrawBgColor = true;
-		//}
+		}
 		g.drawImage(img, x, y, drawWidth, drawHeight, null);
 		g.dispose();
 		
@@ -293,31 +292,50 @@ public class ImageUtils {
     }
     
     private BufferedImage createImage(BufferedImage img, int width, int height){
-		int type = img.getType() == 0 ? BufferedImage.TYPE_INT_ARGB
-				: img.getType();
+		int type = BufferedImage.TYPE_INT_ARGB;
 		BufferedImage newImage = new BufferedImage(width, height, type);
 		
     	Graphics2D g = newImage.createGraphics();
     	this.setRenderingHint(g);
-    	if (!this.hasDrawBgColor) {
+    	if (this.bgcolor != null) {
     		g.setPaint(this.bgcolor);
     		g.fillRect(0, 0, width, width);
-			this.hasDrawBgColor = true;
 		}
 		g.drawImage(img, 0, 0, width, height, null);
 		g.dispose();
 		return newImage;
     }
+    
+    /**
+	 * Returns a {@link BufferedImage} with the specified image type, where the
+	 * graphical content is a copy of the specified image.
+	 * 
+	 * @param img		The image to copy.
+	 * @param imageType	The image type for the image to return.
+	 * @return			A copy of the specified image.
+	 */
+	public BufferedImage copy(BufferedImage img, int imageType) {
+		int width = img.getWidth();
+		int height = img.getHeight();
+
+		BufferedImage newImage = new BufferedImage(width, height, imageType);
+		Graphics g = newImage.createGraphics();
+
+		g.drawImage(img, 0, 0, null);
+
+		g.dispose();
+
+		return newImage;
+	}
 	
     public void makeImage(BufferedImage newImage) throws IOException{
     	String fileExtension = getExtension(destFile);
-    	/*
 		if (fileExtension.equalsIgnoreCase("jpg")
 				|| fileExtension.equalsIgnoreCase("jpeg")
 				|| fileExtension.equalsIgnoreCase("bmp")) {
-			newImage = BufferedImages.copy(newImage, BufferedImage.TYPE_INT_RGB);
+			newImage = this.copy(newImage, BufferedImage.TYPE_INT_RGB);
 		}
-		*/
+		
 		ImageWriter imgWriter = ImageIO.getImageWritersByFormatName(fileExtension)
 				.next();
 		ImageWriteParam imgWriteParam = imgWriter.getDefaultWriteParam();
@@ -362,13 +380,14 @@ public class ImageUtils {
 		int newHeight = (int) Math.round(maxY - minY);
 		
 		//newImage = new BufferedImageBuilder(newWidth, newHeight).build();
-		newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+		newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g = newImage.createGraphics();
 		this.setRenderingHint(g);
-		g.setPaint(this.bgcolor);
-		g.fillRect(0, 0, newWidth, newHeight);
-
+		if (this.bgcolor != null) {
+			g.setPaint(this.bgcolor);
+			g.fillRect(0, 0, newWidth, newHeight);
+		}
 		/*
 		 * TODO consider RenderingHints to use. The following are hints which
 		 * have been chosen to give decent image quality. In the future, there

@@ -31,7 +31,6 @@ ImageUtils.fromFile(f)		//设置原图片
 	//.scale(1)				//设置生成图片的伸缩比例
 	//.size(200, 22)		//设置生成图片的宽度和高度
 	.rotate(34)				//设置原图片的旋转角度
-	.bgcolor(Color.BLUE)	//设置背景颜色
-	.quality(0.6f)			//设置压缩比例
+	.bgcolor(Color.BLUE)	//设置背景颜色，如果为null，表示不添加背景颜色，如果图片为png，为透明颜色	.quality(0.6f)			//设置压缩比例，默认为0.75
 	.toFile(new File("d:\\image\\test.jpg"));	//生成图片的路径
 ```
