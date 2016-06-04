@@ -3,12 +3,9 @@ package com.jdk5.blog.image;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -29,6 +26,7 @@ public class ImageUtils {
 	private boolean fixedGivenSize;
 	private Color bgcolor;
 	private boolean keepRatio;
+	private Watermark watermark;
 
 	public ImageUtils(File srcFile){
 		this.srcFile = srcFile;
@@ -47,10 +45,21 @@ public class ImageUtils {
 		this.fixedGivenSize = false;
 		this.keepRatio = false;
 		this.bgcolor = Color.BLACK;
+		this.watermark = null;
 	}
 	
 	public ImageUtils keepRatio(boolean keepRatio){
 		this.keepRatio = keepRatio;
+		return this;
+	}
+	
+	/**
+	 * 指定源文件图片
+	 * @param srcImage	{@link File}
+	 * @return {@link ImageUtils}
+	 */
+	public ImageUtils watermark(Watermark watermark){
+		this.watermark = watermark;
 		return this;
 	}
 	
@@ -177,6 +186,9 @@ public class ImageUtils {
     	if (this.keepRatio) {
     		destImage = this.keepImageRatio(destImage, this.givenWidth, this.givenHeight);
 		}
+    	if (this.watermark != null) {
+    		destImage = watermark.apply(destImage);
+		}
     	try {
 			this.makeImage(destImage);
 		} catch (IOException e) {
@@ -220,9 +232,10 @@ public class ImageUtils {
 		targetWidth = (targetWidth == 0) ? 1 : targetWidth;
 		targetHeight = (targetHeight == 0) ? 1 : targetHeight;
 		
-		BufferedImage resizedImage = this.createImage(img, targetWidth, targetHeight);
+		BufferedImage resizedImage = Utils.createImage(img, targetWidth, 
+				targetHeight, this.bgcolor);
 		Graphics2D g = resizedImage.createGraphics();
-		this.setRenderingHint(g);
+		Utils.setRenderingHint(g);
 		if (this.bgcolor != null) {
 			g.setPaint(this.bgcolor);
 			g.fillRect(0, 0, targetWidth, targetHeight);
@@ -288,22 +301,7 @@ public class ImageUtils {
 		this.givenWidth = (this.givenWidth == 0 ? width : this.givenWidth);
 		this.givenHeight = (this.givenHeight == 0 ? height : this.givenHeight);
 		
-		return this.createImage(srcImage, width, height);
-    }
-    
-    private BufferedImage createImage(BufferedImage img, int width, int height){
-		int type = BufferedImage.TYPE_INT_ARGB;
-		BufferedImage newImage = new BufferedImage(width, height, type);
-		
-    	Graphics2D g = newImage.createGraphics();
-    	this.setRenderingHint(g);
-    	if (this.bgcolor != null) {
-    		g.setPaint(this.bgcolor);
-    		g.fillRect(0, 0, width, width);
-		}
-		g.drawImage(img, 0, 0, width, height, null);
-		g.dispose();
-		return newImage;
+		return Utils.createImage(srcImage, width, height, this.bgcolor);
     }
     
     /**
@@ -383,7 +381,7 @@ public class ImageUtils {
 		newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g = newImage.createGraphics();
-		this.setRenderingHint(g);
+		Utils.setRenderingHint(g);
 		if (this.bgcolor != null) {
 			g.setPaint(this.bgcolor);
 			g.fillRect(0, 0, newWidth, newHeight);
@@ -404,22 +402,6 @@ public class ImageUtils {
 		return newImage;
 	}
 	
-	private void setRenderingHint(Graphics2D g){
-		Map<RenderingHints.Key, Object> m = new HashMap<RenderingHints.Key, Object>();
-		m.put(RenderingHints.KEY_INTERPOLATION, 
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		m.put(RenderingHints.KEY_ALPHA_INTERPOLATION , 
-				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-		m.put(RenderingHints.KEY_COLOR_RENDERING , RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-		m.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		m.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		m.put(RenderingHints.KEY_DITHERING , RenderingHints.VALUE_DITHER_ENABLE);
-		/*
-		m.put(RenderingHints. , RenderingHints.);
-		*/
-		g.setRenderingHints(m);
-	}
-
 	private double[] calculatePosition(double x, double y) {
 		double angle = this.angle;
 		angle = Math.toRadians(angle);
@@ -444,4 +426,5 @@ public class ImageUtils {
 		}
 		return null;
 	}
+	
 }

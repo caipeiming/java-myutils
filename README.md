@@ -24,6 +24,9 @@ validator.makeID(true)
 ```java
 String str = ImageUtilsTest.class.getResource("/org.jpg").getPath();
 File f = new File(str);		//原图片
+str = ImageUtilsTest.class.getResource("/images/watermarkater.png").getPath();	//水印
+BufferedImage watermarkImage = ImageIO.read(new File(str));
+Watermark watermark = new Watermark(Positions.CENTER, watermarkImage, 0.6f);	//水印居中，透明度0.6
 
 ImageUtils.fromFile(f)		//设置原图片
 	//.width(200)			//设置生成图片的宽度，高度将以原图片的高度等比例伸缩
@@ -31,6 +34,8 @@ ImageUtils.fromFile(f)		//设置原图片
 	//.scale(1)				//设置生成图片的伸缩比例
 	//.size(200, 22)		//设置生成图片的宽度和高度
 	.rotate(34)				//设置原图片的旋转角度
-	.bgcolor(Color.BLUE)	//设置背景颜色，如果为null，表示不添加背景颜色，如果图片为png，为透明颜色	.quality(0.6f)			//设置压缩比例，默认为0.75
+	.watermark(watermark)	//设置水印
+	.bgcolor(Color.BLUE)	//设置背景颜色，如果为null，表示不添加背景颜色，如果图片为png，为透明颜色
+	.quality(0.6f)			//设置压缩比例，默认为0.75
 	.toFile(new File("d:\\image\\test.jpg"));	//生成图片的路径
 ```

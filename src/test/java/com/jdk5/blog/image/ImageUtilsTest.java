@@ -1,7 +1,10 @@
 package com.jdk5.blog.image;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
+
+import javax.imageio.ImageIO;
 
 import junit.framework.TestCase;
 
@@ -12,7 +15,9 @@ public class ImageUtilsTest extends TestCase {
 		try {
 			String str = ImageUtilsTest.class.getResource("/images/org.jpg").getPath();
 			File orgJpg = new File(str);
-			
+			str = ImageUtilsTest.class.getResource("/images/org.png").getPath();
+			File orgPng = new File(str);
+			/*
 			ImageUtils.fromFile(orgJpg)
 				.quality(0.7f)
 				.fixedGivenSize(true)
@@ -44,14 +49,8 @@ public class ImageUtilsTest extends TestCase {
 				.width(700)
 				.toFile(new File("d:\\image\\test.jpg"));
 			
-			str = ImageUtilsTest.class.getResource("/images/org.png").getPath();
-			File orgPng = new File(str);
-			
 			ImageUtils.fromFile(orgJpg)
-				//.width(200)
-				//.height(200)
 				.scale(1)
-				//.size(200, 22)
 				.rotate(150)
 				.quality(0.6f)
 				.bgcolor(Color.BLUE)
@@ -62,6 +61,15 @@ public class ImageUtilsTest extends TestCase {
 				.rotate(34)		//旋转角度
 				.quality(0.6f)
 				.bgcolor(null)	//透明背景
+				.toFile(new File("d:\\image\\test.png"));
+			*/
+			str = ImageUtilsTest.class.getResource("/images/watermarkater.png").getPath();
+			BufferedImage watermarkImage = ImageIO.read(new File(str));
+			Watermark watermark = new Watermark(Positions.CENTER,
+					watermarkImage, 0.6f);
+			ImageUtils.fromFile(orgPng)
+				.scale(1)
+				.watermark(watermark)
 				.toFile(new File("d:\\image\\test.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
