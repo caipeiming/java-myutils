@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -26,7 +27,7 @@ public class ImageUtils {
 	private boolean fixedGivenSize;
 	private Color bgcolor;
 	private boolean keepRatio;
-	private Watermark watermark;
+	private ArrayList<Watermark> watermarkArr;
 
 	public ImageUtils(File srcFile){
 		this.srcFile = srcFile;
@@ -45,7 +46,7 @@ public class ImageUtils {
 		this.fixedGivenSize = false;
 		this.keepRatio = false;
 		this.bgcolor = Color.BLACK;
-		this.watermark = null;
+		this.watermarkArr = new ArrayList<Watermark>();
 	}
 	
 	public ImageUtils keepRatio(boolean keepRatio){
@@ -54,12 +55,22 @@ public class ImageUtils {
 	}
 	
 	/**
-	 * 指定源文件图片
-	 * @param srcImage	{@link File}
+	 * 指定一个水印文件
+	 * @param watermark	{@link Watermark}
 	 * @return {@link ImageUtils}
 	 */
 	public ImageUtils watermark(Watermark watermark){
-		this.watermark = watermark;
+		this.watermarkArr.add(watermark);
+		return this;
+	}
+	
+	/**
+	 * 指定多个水印文件
+	 * @param watermarkArr	{@link ArrayList}
+	 * @return {@link ImageUtils}
+	 */
+	public ImageUtils watermarkArray(ArrayList<Watermark> watermarkArr){
+		this.watermarkArr.addAll(watermarkArr);
 		return this;
 	}
 	
@@ -186,8 +197,10 @@ public class ImageUtils {
     	if (this.keepRatio) {
     		destImage = this.keepImageRatio(destImage, this.givenWidth, this.givenHeight);
 		}
-    	if (this.watermark != null) {
-    		destImage = watermark.apply(destImage);
+    	if (this.watermarkArr != null) {
+    		for (Watermark watermark : watermarkArr) {
+    			destImage = watermark.apply(destImage);
+			}
 		}
     	try {
 			this.makeImage(destImage);

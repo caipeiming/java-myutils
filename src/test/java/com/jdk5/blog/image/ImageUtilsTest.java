@@ -3,6 +3,7 @@ package com.jdk5.blog.image;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -71,6 +72,16 @@ public class ImageUtilsTest extends TestCase {
 				.scale(1)
 				.watermark(watermark)
 				.toFile(new File("d:\\image\\test.png"));
+			
+			Watermark watermark2 = new Watermark(Positions.BOTTOM_CENTER,
+					watermarkImage, 0.6f);
+			ArrayList<Watermark> list = new ArrayList<Watermark>();
+			list.add(watermark);
+			list.add(watermark2);
+			ImageUtils.fromFile(orgPng)
+				.scale(1)
+				.watermarkArray(list)
+				.toFile(new File("d:\\image\\testMul.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
