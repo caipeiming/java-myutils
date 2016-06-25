@@ -56,14 +56,16 @@ public class ImageUtilsTest extends TestCase {
 				.quality(0.6f)
 				.bgcolor(Color.BLUE)
 				.toFile(new File("d:\\image\\test.jpg"));
-			
+			*/
 			ImageUtils.fromFile(orgPng)
-				.scale(1)
+				.size(200, 200)
 				.rotate(34)		//旋转角度
 				.quality(0.6f)
-				.bgcolor(null)	//透明背景
+				.fixedGivenSize(true)
+				.keepRatio(true)
+				.bgcolor(Color.blue)	//透明背景
 				.toFile(new File("d:\\image\\test.png"));
-			*/
+			/*
 			str = ImageUtilsTest.class.getResource("/images/watermarkater.png").getPath();
 			BufferedImage watermarkImage = ImageIO.read(new File(str));
 			Watermark watermark = new Watermark(Positions.CENTER,
@@ -82,6 +84,7 @@ public class ImageUtilsTest extends TestCase {
 				.scale(1)
 				.watermarkArray(list)
 				.toFile(new File("d:\\image\\testMul.png"));
+			*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

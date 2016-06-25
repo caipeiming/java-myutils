@@ -179,21 +179,21 @@ public class ImageUtils {
     	BufferedImage srcImage = null;
 		try {
 			srcImage = ImageIO.read(this.srcFile);
+			if (this.angle != 0) {
+				try {
+					srcImage = this.rotateImage(srcImage);
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("rotate error!");
+					return;
+				}
+			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.out.println("read image error!");
 			return;
 		}
 		BufferedImage destImage = this.resize(srcImage);
-    	if (this.angle != 0) {
-			try {
-				destImage = this.rotateImage(destImage);
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println("rotate error!");
-				return;
-			}
-		}
     	if (this.keepRatio) {
     		destImage = this.keepImageRatio(destImage, this.givenWidth, this.givenHeight);
 		}
@@ -244,9 +244,12 @@ public class ImageUtils {
 		y = (targetHeight - drawHeight) / 2;
 		targetWidth = (targetWidth == 0) ? 1 : targetWidth;
 		targetHeight = (targetHeight == 0) ? 1 : targetHeight;
-		
+		/*
 		BufferedImage resizedImage = Utils.createImage(img, targetWidth, 
 				targetHeight, this.bgcolor);
+				*/
+		int type = BufferedImage.TYPE_INT_ARGB;
+		BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, type);
 		Graphics2D g = resizedImage.createGraphics();
 		Utils.setRenderingHint(g);
 		if (this.bgcolor != null) {
