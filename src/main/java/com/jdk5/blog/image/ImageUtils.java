@@ -363,6 +363,7 @@ public class ImageUtils {
 		IIOImage outputImage = new IIOImage(newImage, null, null);
 		imgWriter.write(null, outputImage, imgWriteParam);
 		imgWriter.dispose();
+		outputStream.close();
     }
     
 	private BufferedImage rotateImage(BufferedImage img) throws IOException {
