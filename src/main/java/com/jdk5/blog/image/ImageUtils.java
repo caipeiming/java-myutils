@@ -355,6 +355,9 @@ public class ImageUtils {
 		ImageWriteParam imgWriteParam = imgWriter.getDefaultWriteParam();
 		if (imgWriteParam.canWriteCompressed()) {
 			imgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			if (fileExtension.equalsIgnoreCase("bmp")){
+				imgWriteParam.setCompressionType("BI_RGB");
+			}
 			imgWriteParam.setCompressionQuality(this.quality);
 		}
 		ImageOutputStream outputStream = ImageIO
