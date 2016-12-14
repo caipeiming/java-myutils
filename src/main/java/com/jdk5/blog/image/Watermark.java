@@ -39,8 +39,7 @@ public class Watermark {
 	 *            where {@code 0.0f} is completely transparent, and {@code 1.0f}
 	 *            is completely opaque.
 	 */
-	public Watermark(Position position, BufferedImage watermarkImg,
-			float opacity) {
+	public Watermark(Position position, BufferedImage watermarkImg, float opacity) {
 		if (position == null) {
 			throw new NullPointerException("Position is null.");
 		}
@@ -48,8 +47,7 @@ public class Watermark {
 			throw new NullPointerException("Watermark image is null.");
 		}
 		if (opacity > 1.0f || opacity < 0.0f) {
-			throw new IllegalArgumentException("Opacity is out of range of "
-					+ "between 0.0f and 1.0f.");
+			throw new IllegalArgumentException("Opacity is out of range of " + "between 0.0f and 1.0f.");
 		}
 
 		this.position = position;
@@ -60,17 +58,15 @@ public class Watermark {
 	public BufferedImage apply(BufferedImage img) {
 		int width = img.getWidth();
 		int height = img.getHeight();
-		
+
 		this.resize(width, height);
-		
-		BufferedImage imgWithWatermark = Utils.createImage(img,
-				width, height, null);
+
+		BufferedImage imgWithWatermark = Utils.createImage(img, width, height, null);
 
 		int watermarkWidth = watermarkImg.getWidth();
 		int watermarkHeight = watermarkImg.getHeight();
 
-		Point p = position.calculate(width, height, watermarkWidth,
-				watermarkHeight, 0, 0, 0, 0);
+		Point p = position.calculate(width, height, watermarkWidth, watermarkHeight, 0, 0, 0, 0);
 
 		Graphics2D g = imgWithWatermark.createGraphics();
 
@@ -78,8 +74,7 @@ public class Watermark {
 		g.drawImage(img, 0, 0, null);
 
 		// Draw the watermark on top.
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-				opacity));
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
 		g.drawImage(watermarkImg, p.x, p.y, null);
 
@@ -87,27 +82,30 @@ public class Watermark {
 
 		return imgWithWatermark;
 	}
-	
-	private int[] resize(int width, int height){
+
+	private int[] resize(int width, int height) {
 		int wmwidth = this.watermarkImg.getWidth();
 		int wmheight = this.watermarkImg.getHeight();
-		
+
 		int drawWidth = width;
 		int drawHeight = height;
 		double sourceRatio = (double) wmwidth / (double) wmheight;
 		double targetRatio = (double) width / (double) height;
 
-		if (Double.compare(sourceRatio, targetRatio) != 0) {
+		if (wmwidth <= drawHeight && wmheight <= drawHeight) {
+			drawWidth = wmwidth;
+			drawHeight = wmheight;
+		} else if (Double.compare(sourceRatio, targetRatio) != 0) {
 			if (sourceRatio > targetRatio) {
-				//drawHeight = (int) Math.round(wmwidth / sourceRatio);
+				// drawHeight = (int) Math.round(wmwidth / sourceRatio);
 				drawHeight = (int) (drawWidth * wmheight / wmwidth);
 			} else {
-				//drawWidth = (int) Math.round(wmheight * sourceRatio);
+				// drawWidth = (int) Math.round(wmheight * sourceRatio);
 				drawWidth = wmwidth * drawHeight / wmheight;
 			}
 		}
 		this.watermarkImg = Utils.createImage(this.watermarkImg, drawWidth, drawHeight, null);
-		int[] size = {drawWidth, drawHeight};
+		int[] size = { drawWidth, drawHeight };
 		return size;
 	}
 }
