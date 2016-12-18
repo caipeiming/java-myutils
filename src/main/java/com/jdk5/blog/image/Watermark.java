@@ -92,7 +92,7 @@ public class Watermark {
 		double sourceRatio = (double) wmwidth / (double) wmheight;
 		double targetRatio = (double) width / (double) height;
 
-		if (wmwidth <= drawHeight && wmheight <= drawHeight) {
+		if (wmwidth <= drawWidth && wmheight <= drawHeight) {
 			drawWidth = wmwidth;
 			drawHeight = wmheight;
 		} else if (Double.compare(sourceRatio, targetRatio) != 0) {
