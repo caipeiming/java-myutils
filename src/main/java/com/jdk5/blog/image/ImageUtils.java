@@ -212,6 +212,10 @@ public class ImageUtils {
 		BufferedImage srcImage = null;
 		try {
 			srcImage = ImageIO.read(this.srcFile);
+			if (this.scale > 0 && this.width == 0 && this.height == 0) {
+				this.width = (int) (srcImage.getWidth() * this.scale);
+				this.height = (int) (srcImage.getHeight() * this.scale);
+			}
 			if (this.angle != 0) {
 				try {
 					srcImage = this.rotateImage(srcImage);
